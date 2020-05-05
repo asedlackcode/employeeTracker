@@ -7,7 +7,7 @@ USE employeetracker_db;
 CREATE TABLE role (
 id INT NOT NULL AUTO_INCREMENT,
 title VARCHAR(30) NOT NULL,
-salary DECIMAL(13,2) NOT NULL,
+salary DECIMAL(7,2) NOT NULL,
 department_id INT NOT NULL,
 PRIMARY KEY (id)
 );
