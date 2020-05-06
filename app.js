@@ -56,7 +56,7 @@ let mainMenu = () => {
 };
 
 let viewEmployees = () => {
-    connection.query(`SELECT * FROM employees`, function (err,res) {
+   return  connection.query("SELECT employees.id, employees.first_name, employees.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN role on employees.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employees manager on manager.id = employees.manager_id;", function (err,res) {
         if (err) throw err;
         const choices = nameList(res);
         console.table(res);
@@ -71,7 +71,7 @@ let viewEmployees = () => {
 }
 
 let viewByDepartment = () => {
-    connection.query(`SELECT * FROM department`, function(err, res) {
+     return connection.query("SELECT department.id, department.name, SUM(role.salary) AS utilized_budget FROM employees LEFT JOIN role on employees.role_id = role.id LEFT JOIN department on role.department_id = department.id GROUP BY department.id, department.name", function(err, res) {
         if (err) throw err;
         const choices = departmentList(res);
         console.table(res);
@@ -85,9 +85,9 @@ let viewByDepartment = () => {
 }
 
 let viewByManager = () => {
-    connection.query(`SELECT * FROM employees`, function(err, res) {
+    connection.query("SELECT employees.id, employees.first_name, employees.last_name, department.name AS department, role.title FROM employees LEFT JOIN role on role.id = employees.role_id LEFT JOIN department ON department.id = role.department_id WHERE manager_id", function(err, res) {
         if (err) throw err;
-        const choices = departmentList(res);
+        const choices = managerList(res);
         console.table(res);
         inquirer.prompt([{
             name: "choice",
@@ -98,6 +98,22 @@ let viewByManager = () => {
     })
 }
 
+let addEmployee = () => {
+    
+    const employee =  prompt([
+        {
+            name: "first_name",
+            message: "What is your employee's first name?"
+        },
+        {
+            name: "last_name",
+            message: "What is your employee's last name?"
+        }
+    ]);
+
+    
+    
+}
 mainMenu();
 const nameList = (results) => {
     var choiceArray = results.map(result => result.first_name); 
@@ -110,6 +126,6 @@ const departmentList = (results) => {
 }
 
 const managerList = (results) => {
-    var choiceArray = results.map(result => result.role);
+    var choiceArray = results.map(result => result.id);
     return choiceArray;
 }
